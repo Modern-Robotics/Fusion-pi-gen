@@ -13,5 +13,7 @@ fi
 on_chroot apt-key add - < files/raspberrypi.gpg.key
 on_chroot << EOF
 apt-get update
+apt-get upgrade -y
 apt-get dist-upgrade -y
+apt-get --fix-missing
 EOF
