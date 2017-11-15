@@ -4,7 +4,7 @@
 # Default argument values
 ADDRESS=https://github.com/Modern-Robotics/Fusion.git
 MAIN_DIR=/usr/Fusion
-COMMIT=74ed69f
+COMMIT=d5f4a5c
 
 CMDLINE=/boot/cmdline.txt
 
