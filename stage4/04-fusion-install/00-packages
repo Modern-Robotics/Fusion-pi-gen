@@ -3,8 +3,6 @@ node
 npm
 mongodb
 python-smbus
-libopencv-dev
-python-opencv
 hostapd
 dnsmasq
 libjpeg8-dev
