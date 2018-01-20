@@ -161,3 +161,8 @@ systemctl stop vncserver-x11-serviced.service
 # -----------------------------------------------------------------------------
 # Symbolic link for videodev.h used by mjpg-streamer
 ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
+
+# -----------------------------------------------------------------------------
+# Add support for credentials in url 
+cd /usr/Fusion/FusionServer
+sudo npm install --unsafe-perm --production
