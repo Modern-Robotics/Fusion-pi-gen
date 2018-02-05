@@ -4,9 +4,12 @@
 # Default argument values
 ADDRESS=https://github.com/Modern-Robotics/Fusion.git
 MAIN_DIR=/usr/Fusion
-COMMIT=4fda0d3
-
 CMDLINE=/boot/cmdline.txt
+
+# -------------------------------------------------------------------
+# Set the commit number to build or build the most recent release
+COMMIT=4fda0d3 
+#COMMIT=$(sudo git rev-list --tags --max-count=1)
 
 # -------------------------------------------------------------------
 # Set boot to enable uart
@@ -105,7 +108,8 @@ echo "blacklist hci_uart" | tee -a /etc/modprobe.d/raspi-blacklist.conf
 cd /usr 
 rm -r Fusion
 git clone $ADDRESS
-git reset --hard $COMMIT #$(sudo git rev-list --tags --max-count=1)
+cd $MAIN_DIR
+git reset --hard $COMMIT 
 
 npm cache clean -f 
 npm install -g n 
