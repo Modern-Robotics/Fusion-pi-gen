@@ -164,5 +164,5 @@ ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
 
 # -----------------------------------------------------------------------------
 # Add support for credentials in url 
-cd /usr/Fusion/FusionServer
-sudo npm install --unsafe-perm --production
+#cd /usr/Fusion/FusionServer
+#sudo npm install --unsafe-perm --production
