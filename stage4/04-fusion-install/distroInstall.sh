@@ -8,7 +8,7 @@ CMDLINE=/boot/cmdline.txt
 
 # -------------------------------------------------------------------
 # Set the commit number to build or build the most recent release
-COMMIT=4fda0d3 
+COMMIT=5750b77 
 #COMMIT=$(sudo git rev-list --tags --max-count=1)
 
 # -------------------------------------------------------------------
@@ -168,5 +168,5 @@ ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
 
 # -----------------------------------------------------------------------------
 # Add support for credentials in url 
-#cd /usr/Fusion/FusionServer
-#sudo npm install --unsafe-perm --production
+cd /usr/Fusion/FusionServer/Build
+sudo npm install --production
