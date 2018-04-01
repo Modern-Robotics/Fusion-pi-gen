@@ -2,13 +2,13 @@
 
 # -------------------------------------------------------------------
 # Default argument values
-ADDRESS=https://github.com/Modern-Robotics/Fusion.git
+ADDRESS=http://github.com/Modern-Robotics/Fusion.git
 MAIN_DIR=/usr/Fusion
 CMDLINE=/boot/cmdline.txt
 
 # -------------------------------------------------------------------
 # Set the commit number to build or build the most recent release
-COMMIT=5750b77 
+COMMIT= 
 #COMMIT=$(sudo git rev-list --tags --max-count=1)
 
 # -------------------------------------------------------------------
@@ -109,7 +109,7 @@ cd /usr
 rm -r Fusion
 git clone $ADDRESS
 cd $MAIN_DIR
-git reset --hard $COMMIT 
+#git reset --hard $COMMIT 
 
 npm cache clean -f 
 npm install -g n 
@@ -168,5 +168,5 @@ ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
 
 # -----------------------------------------------------------------------------
 # Add support for credentials in url 
-cd /usr/Fusion/FusionServer/Build
-sudo npm install --production
+# cd /usr/Fusion/FusionServer/Build
+# npm install --production

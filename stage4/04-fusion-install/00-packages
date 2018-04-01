@@ -3,6 +3,7 @@ node
 npm
 mongodb
 python-smbus
+python-dev
 hostapd
 dnsmasq
 libjpeg8-dev
