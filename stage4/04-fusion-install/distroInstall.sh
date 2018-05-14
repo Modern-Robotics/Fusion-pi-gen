@@ -145,6 +145,9 @@ chmod 755 /etc/rc.local
 cp /usr/Fusion/etc/keyboard /etc/default/keyboard
 chmod 644 /etc/default/keyboard
 
+cp /usr/Fusion/etc/vncserver-x11 /root/.vnc/config.d/vncserver-x11
+chmod 700 /root/.vnc/config.d/vncserver-x11
+
 # -----------------------------------------------------------------------------
 # Enable services
 update-rc.d ssh enable 
