@@ -120,8 +120,14 @@ pip install imutils
 pip install numpy 
 pip install --upgrade numpy
 
+# Install Fusion library
 pip uninstall Fusion -y
-pip install $MAIN_DIR/lib/Fusion*
+pip uninstall remi -y
+pip uninstall pylibftdi -y
+
+pip install $MAIN_DIR/lib/*.tar.gz
+
+dpkg -i $MAIN_DIR/lib/*.deb
 
 cp /usr/Fusion/etc/interfaces /etc/network/interfaces 
 chmod 644 /etc/network/interfaces 
