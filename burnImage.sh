@@ -20,7 +20,7 @@ then
     echo "USB on device sda, burning image..."
     umount /dev/sda*
     image=`ls *.img`
-    dd if=$image of=/dev/sda bs=8192 status=progress &
+    ## dd if=$image of=/dev/sda bs=8192 status=progress &
 else
     echo "sda is not a usb device"
 fi
