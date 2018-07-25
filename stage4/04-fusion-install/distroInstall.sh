@@ -113,7 +113,8 @@ cd $MAIN_DIR
 
 npm cache clean -f 
 npm install -g n 
-n stable 
+n 9.10.1 #n stable 
+
 npm install forever -g 
 pip install imutils 
 pip install numpy 
