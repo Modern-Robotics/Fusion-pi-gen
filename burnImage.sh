@@ -14,16 +14,16 @@ fi
 
 # Test for which device is the usb key
 # SDA ---------------------------------------------------------------
-udevadm info --query=all --name=sda | grep ID_BUS=usb
-if [ $? == "0" ]
-then
-    echo "USB on device sda, burning image..."
-    umount /dev/sda*
-    image=`ls *.img`
-    ## dd if=$image of=/dev/sda bs=8192 status=progress &
-else
-    echo "sda is not a usb device"
-fi
+# udevadm info --query=all --name=sda | grep ID_BUS=usb
+# if [ $? == "0" ]
+# then
+    # echo "USB on device sda, burning image..."
+    # umount /dev/sda*
+    # image=`ls *.img`
+    # dd if=$image of=/dev/sda bs=8192 status=progress &
+# else
+    # echo "sda is not a usb device"
+# fi
 
 # SDB ---------------------------------------------------------------
 udevadm info --query=all --name=sdb | grep ID_BUS=usb
@@ -83,4 +83,40 @@ then
     dd if=$image of=/dev/sdf bs=8192 status=progress &
 else
     echo "sdf is not a usb device"
+fi
+
+# SDG ---------------------------------------------------------------
+udevadm info --query=all --name=sdg | grep ID_BUS=usb
+if [ $? == "0" ]
+then
+    echo "USB on device sdg, burning image..."
+    umount /dev/sdg*
+    image=`ls *.img`
+    dd if=$image of=/dev/sdg bs=8192 status=progress &
+else
+    echo "sdg is not a usb device"
+fi
+
+# SDH ---------------------------------------------------------------
+udevadm info --query=all --name=sdh | grep ID_BUS=usb
+if [ $? == "0" ]
+then
+    echo "USB on device sdh, burning image..."
+    umount /dev/sdh*
+    image=`ls *.img`
+    dd if=$image of=/dev/sdh bs=8192 status=progress &
+else
+    echo "sdh is not a usb device"
+fi
+
+# SDI ---------------------------------------------------------------
+udevadm info --query=all --name=sdi | grep ID_BUS=usb
+if [ $? == "0" ]
+then
+    echo "USB on device sdi, burning image..."
+    umount /dev/sdi*
+    image=`ls *.img`
+    dd if=$image of=/dev/sdi bs=8192 status=progress &
+else
+    echo "sdi is not a usb device"
 fi
