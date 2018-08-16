@@ -12,6 +12,7 @@ export -f log
 
 
 bootstrap(){
+    echo "$atBRT$fgCYN   ==> running bootstrap process...$atRST$fgNEU"
 	local ARCH
 	ARCH=$(dpkg --print-architecture)
 
@@ -32,6 +33,7 @@ export -f bootstrap
 
 
 copy_previous(){
+    echo "$atBRT$fgCYN   ==> running copy_previous process...$atRST$fgNEU"
 	if [ ! -d "${PREV_ROOTFS_DIR}" ]; then
 		# <jwa> Let's add the offending path to the error output...
 		echo "Previous stage rootfs (${PREV_ROOTFS_DIR}) not found"

@@ -4,6 +4,10 @@
 # Build procedure for Fusion-based Jessie Debian -------------------------------
 # ------------------------------------------------------------------------------
 # Modification History:
+#   16-Aug-2018 <jwa> - Added additional comments and descriptive output; added
+#		code to make sure all .sh files in the source path have their execute
+#		bits set.  (files transferred from windows machines will lose the bit)
+#
 #   10-Aug-2018 <jwa> - Added command line argument (ie: $1) containing build
 #		name of Image that we are continuing development work with.  This is
 #		necessary since the build.sh script attempts to generate an image name
@@ -174,6 +178,10 @@ run_stage(){
 # Start of Mainline Script
 #=======================================
 #
+echo "$fgYEL$bgRED================================================================================="
+echo "===== MakeJessie Script Starting                                            ====="
+echo "=================================================================================$fgNEU$bgNEU"
+
 if [ "$(id -u)" != "0" ]; then
 	echo "Please run as root" 1>&2
 	exit 1
@@ -227,6 +235,14 @@ export QUILT_PATCHES
 export QUILT_NO_DIFF_INDEX=1
 export QUILT_NO_DIFF_TIMESTAMPS=1
 export QUILT_REFRESH_ARGS="-p ab"
+
+
+# Make sure the execute bit is set on all .sh files in this branch
+echo "...checking that scripts are executable..."
+find ${BASE_DIR} -iname "*.sh" -exec chmod +x -v {} \;
+echo "...done..."
+gap
+
 
 source ${SCRIPT_DIR}/common
 source ${SCRIPT_DIR}/dependencies_check
