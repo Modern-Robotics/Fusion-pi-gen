@@ -1,7 +1,54 @@
 #!/bin/bash -e
 
+# ------------------------------------------------------------------------------
+# Build procedure for Fusion-based Jessie Debian -------------------------------
+# ------------------------------------------------------------------------------
+# Modification History:
+#   10-Aug-2018 <jwa> - Added command line argument (ie: $1) containing build
+#		name of Image that we are continuing development work with.  This is
+#		necessary since the build.sh script attempts to generate an image name
+#		based on the current date.
+#
+#   09-Aug-2018 <jwa> - Added additional descriptive console output to help the 
+#		user keep track of what stage of the process we are running.
+#-------------------------------------------------------------------------------
+
+#-<jwa>-----------------------------------------------
+# Let's include a little color into the output using
+# VT100 (TTY) Substitutions
+ESC=
+COL60=$ESC[60G
+
+# Attributes    ;    Foregrounds     ;    Backgrounds
+atRST=$ESC[0m   ;   fgBLK=$ESC[30m   ;   bgBLK=$ESC[40m
+atBRT=$ESC[1m   ;   fgRED=$ESC[31m   ;   bgRED=$ESC[41m
+atDIM=$ESC[2m   ;   fgGRN=$ESC[32m   ;   bgGRN=$ESC[42m
+atUN1=$ESC[3m   ;   fgYEL=$ESC[33m   ;   bgYEL=$ESC[43m
+atUND=$ESC[4m   ;   fgBLU=$ESC[34m   ;   bgBLU=$ESC[44m
+atBLK=$ESC[5m   ;   fgMAG=$ESC[35m   ;   bgMAG=$ESC[45m
+atUN2=$ESC[6m   ;   fgCYN=$ESC[36m   ;   bgCYN=$ESC[46m
+atREV=$ESC[7m   ;   fgWHT=$ESC[37m   ;   bgWHT=$ESC[47m
+atHID=$ESC[8m   ;   fgNEU=$ESC[39m   ;   bgNEU=$ESC[49m
+
+#==============================================================================
+# Local Function Definitions
+#==============================================================================
+
+#---[ gap - adds a gap in the output ]-----------------
+#
+gap() {
+   echo 
+   echo
+   echo
+} #---[ end gap() ]------------------------ 
+
+
+#---[ run_sub_stage - processes a sub-stage component of the build process ]----
+#
 run_sub_stage()
 {
+	echo "$fgRED=============================================================================="
+	echo "   Beginning Sub-Stage ${SUB_STAGE_DIR}  $fgNEU"
 	log "Begin ${SUB_STAGE_DIR}"
 	pushd ${SUB_STAGE_DIR} > /dev/null
 	for i in {00..99}; do
@@ -75,10 +122,16 @@ EOF
 	done
 	popd > /dev/null
 	log "End ${SUB_STAGE_DIR}"
-}
+	echo "$fgRED   Completed Sub-Stage ${SUB_STAGE_DIR}"
+	echo "==============================================================================$fgNEU"
+	echo
+} #---[ end of run_sub_stage ]--------------------------------------------------
 
 
+#---[ run_stage - processes a full stage component of the build process ]-------
+#
 run_stage(){
+	echo "$atBRT$fgBLU=====( ( ( ( ( STARTING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
 	log "Begin ${STAGE_DIR}"
 	STAGE=$(basename ${STAGE_DIR})
 	pushd ${STAGE_DIR} > /dev/null
@@ -112,7 +165,10 @@ run_stage(){
 	PREV_ROOTFS_DIR=${ROOTFS_DIR}
 	popd > /dev/null
 	log "End ${STAGE_DIR}"
-}
+	echo "$atBRT$fgBLU=====( ( ( ( ( FINISHING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
+	gap
+} #---[ end of run_stage ]------------------------------------------------------
+
 
 if [ "$(id -u)" != "0" ]; then
 	echo "Please run as root" 1>&2
@@ -128,7 +184,17 @@ if [ -z "${IMG_NAME}" ]; then
 	exit 1
 fi
 
-export IMG_DATE=${IMG_DATE:-"$(date +%Y-%m-%d)"}
+# See if we were passed the date to use as the IMG_DATE so that we can continue work on a 
+# Previous build...
+echo -e -n "\n\nChecking for date on command line..."
+if [ $# == 0 ]; then
+	echo -e "Using new date\n\n"
+	export IMG_DATE=${IMG_DATE:-"$(date +%Y-%m-%d)"}
+else
+	echo -e "Using old date $1\n\n"
+	export IMG_DATE=$1
+fi
+
 
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export SCRIPT_DIR="${BASE_DIR}/scripts"

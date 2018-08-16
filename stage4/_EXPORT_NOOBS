@@ -1,2 +1,2 @@
-NOOBS_NAME="MRI Fusion Jessie"
-NOOBS_DESCRIPTION="A port of Debian jessie for the Fusion Control system on Raspberry Pi (full version)"
+NOOBS_NAME="MRI Jessie"
+NOOBS_DESCRIPTION="A port of Debian jessie for the Raspberry Pi (full version)"
