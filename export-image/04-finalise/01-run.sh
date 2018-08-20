@@ -59,6 +59,11 @@ mkdir -p ${DEPLOY_DIR}
 rm -f ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip
 
 echo zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip ${IMG_FILE}
+
 pushd ${STAGE_WORK_DIR} > /dev/null
-zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip $(basename ${IMG_FILE})
+
+##### <jwa> #####
+##### Let's skip makeing the zip file right now -- it takes so long!
+##### zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip $(basename ${IMG_FILE})
+
 popd > /dev/null
