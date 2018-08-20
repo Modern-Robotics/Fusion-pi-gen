@@ -239,7 +239,7 @@ export QUILT_REFRESH_ARGS="-p ab"
 
 # Make sure the execute bit is set on all .sh files in this branch
 echo "...checking that scripts are executable..."
-find ${BASE_DIR} -iname "*.sh" -exec chmod +x -v {} \;
+find ${BASE_DIR} -iname "\.sh" -exec chmod +x -v {} \;
 echo "...done..."
 gap
 
