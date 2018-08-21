@@ -237,11 +237,30 @@ export QUILT_NO_DIFF_TIMESTAMPS=1
 export QUILT_REFRESH_ARGS="-p ab"
 
 
-# Make sure the execute bit is set on all .sh files in this branch
-echo "...checking that scripts are executable..."
-find ${BASE_DIR} -iname "\.sh" -exec chmod +x -v {} \;
-echo "...done..."
+# If the makejessie.sh script is not executable, then go and make sure that
+# the execute bit is set on all .sh files in this folder, in the 'stage#' folders, and
+# in the 'export_#' folders.
+#
+echo "$fgBLU...Checking to make sure all our scripts are executable...$fgNEU"
+# if [ ! -x makejessie.sh ] ; then
+
+    echo "$fgBLU...Checking in $BASE_DIR...$fgNEU"
+    chmod +x -v *.sh
+	echo
+
+    for DIR_NAME in stage0 stage1 stage2 stage3 stage4 export-image export-noobs scripts
+        do
+            echo "$fgBLU...Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
+            find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x -v {} \;
+			echo
+        done
+#    fi
+
+echo "$fgBLU...done...$fgNEU"
 gap
+
+
+exit 99
 
 
 source ${SCRIPT_DIR}/common
