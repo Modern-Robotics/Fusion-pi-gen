@@ -1,1 +1,12 @@
-IMG_NAME='JWA_Jessie'
+#===============================================================================
+# MakeJessie Configuration File - Specifies the name and date identifier for
+#   the build
+#-------------------------------------------------------------------------------
+# 23-Aug-2018 <jwa> - Added IMG_DATE to this file to eliminate the problem with
+#                     continuations on different dates
+#
+#===============================================================================
+
+IMG_NAME="JWA_Jessie"
+
+IMG_DATE="RC_1.1"

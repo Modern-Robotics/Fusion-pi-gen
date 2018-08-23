@@ -4,17 +4,20 @@
 # Build procedure for Fusion-based Jessie Debian -------------------------------
 # ------------------------------------------------------------------------------
 # Modification History:
+#   23-Aug-2018 <jwa> - Modified to look in the config file for the IMG_DATE
+#       identifier. If it is found, it is used. Otherwise, the current date is
+#       used.
 #   16-Aug-2018 <jwa> - Added additional comments and descriptive output; added
-#		code to make sure all .sh files in the source path have their execute
-#		bits set.  (files transferred from windows machines will lose the bit)
+#       code to make sure all .sh files in the source path have their execute
+#       bits set.  (files transferred from windows machines will lose the bit)
 #
 #   10-Aug-2018 <jwa> - Added command line argument (ie: $1) containing build
-#		name of Image that we are continuing development work with.  This is
-#		necessary since the build.sh script attempts to generate an image name
-#		based on the current date.
+#       name of Image that we are continuing development work with.  This is
+#       necessary since the build.sh script attempts to generate an image name
+#       based on the current date.
 #
 #   09-Aug-2018 <jwa> - Added additional descriptive console output to help the 
-#		user keep track of what stage of the process we are running.
+#       user keep track of what stage of the process we are running.
 #-------------------------------------------------------------------------------
 
 #-<jwa>-----------------------------------------------
@@ -41,7 +44,7 @@ atHID=$ESC[8m   ;   fgNEU=$ESC[39m   ;   bgNEU=$ESC[49m
 #---[ gap - adds a gap in the output ]-----------------
 #
 gap() {
-   echo 
+   echo
    echo
    echo
 } #---[ end gap() ]------------------------ 
@@ -51,126 +54,126 @@ gap() {
 #
 run_sub_stage()
 {
-	echo "$fgRED=============================================================================="
-	echo "   Beginning Sub-Stage ${SUB_STAGE_DIR}  $fgNEU"
-	log "Begin ${SUB_STAGE_DIR}"
-	pushd ${SUB_STAGE_DIR} > /dev/null
-	for i in {00..99}; do
-		if [ -f ${i}-debconf ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-debconf"
-			on_chroot << EOF
+    echo "$fgRED=============================================================================="
+    echo "   Beginning Sub-Stage ${SUB_STAGE_DIR}  $fgNEU"
+    log "Begin ${SUB_STAGE_DIR}"
+    pushd ${SUB_STAGE_DIR} > /dev/null
+    for i in {00..99}; do
+        if [ -f ${i}-debconf ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-debconf"
+            on_chroot << EOF
 debconf-set-selections <<SELEOF
 `cat ${i}-debconf`
 SELEOF
 EOF
-		log "End ${SUB_STAGE_DIR}/${i}-debconf"
-		fi
-		if [ -f ${i}-packages-nr ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-packages-nr"
-			PACKAGES="$(sed -f "${SCRIPT_DIR}/remove-comments.sed" < ${i}-packages-nr)"
-			if [ -n "$PACKAGES" ]; then
-				on_chroot << EOF
+        log "End ${SUB_STAGE_DIR}/${i}-debconf"
+        fi
+        if [ -f ${i}-packages-nr ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-packages-nr"
+            PACKAGES="$(sed -f "${SCRIPT_DIR}/remove-comments.sed" < ${i}-packages-nr)"
+            if [ -n "$PACKAGES" ]; then
+                on_chroot << EOF
 apt-get install --no-install-recommends -y $PACKAGES
 EOF
-			fi
-			log "End ${SUB_STAGE_DIR}/${i}-packages-nr"
-		fi
-		if [ -f ${i}-packages ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-packages"
-			PACKAGES="$(sed -f "${SCRIPT_DIR}/remove-comments.sed" < ${i}-packages)"
-			if [ -n "$PACKAGES" ]; then
-				on_chroot << EOF
+            fi
+            log "End ${SUB_STAGE_DIR}/${i}-packages-nr"
+        fi
+        if [ -f ${i}-packages ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-packages"
+            PACKAGES="$(sed -f "${SCRIPT_DIR}/remove-comments.sed" < ${i}-packages)"
+            if [ -n "$PACKAGES" ]; then
+                on_chroot << EOF
 apt-get install -y $PACKAGES
 EOF
-			fi
-			log "End ${SUB_STAGE_DIR}/${i}-packages"
-		fi
-		if [ -d ${i}-patches ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-patches"
-			pushd ${STAGE_WORK_DIR} > /dev/null
-			if [ "${CLEAN}" = "1" ]; then
-				rm -rf .pc
-				rm -rf *-pc
-			fi
-			QUILT_PATCHES=${SUB_STAGE_DIR}/${i}-patches
-			SUB_STAGE_QUILT_PATCH_DIR="$(basename $SUB_STAGE_DIR)-pc"
-			mkdir -p $SUB_STAGE_QUILT_PATCH_DIR
-			ln -snf $SUB_STAGE_QUILT_PATCH_DIR .pc
-			if [ -e ${SUB_STAGE_DIR}/${i}-patches/EDIT ]; then
-				echo "Dropping into bash to edit patches..."
-				bash
-			fi
-			quilt upgrade
-			RC=0
-			quilt push -a || RC=$?
-			case "$RC" in
-				0|2)
-					;;
-				*)
-					false
-					;;
-			esac
-			popd > /dev/null
-			log "End ${SUB_STAGE_DIR}/${i}-patches"
-		fi
-		if [ -x ${i}-run.sh ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-run.sh"
-			./${i}-run.sh
-			log "End ${SUB_STAGE_DIR}/${i}-run.sh"
-		fi
-		if [ -f ${i}-run-chroot.sh ]; then
-			log "Begin ${SUB_STAGE_DIR}/${i}-run-chroot.sh"
-			on_chroot < ${i}-run-chroot.sh
-			log "End ${SUB_STAGE_DIR}/${i}-run-chroot.sh"
-		fi
-	done
-	popd > /dev/null
-	log "End ${SUB_STAGE_DIR}"
-	echo "$fgRED   Completed Sub-Stage ${SUB_STAGE_DIR}"
-	echo "==============================================================================$fgNEU"
-	echo
+            fi
+            log "End ${SUB_STAGE_DIR}/${i}-packages"
+        fi
+        if [ -d ${i}-patches ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-patches"
+            pushd ${STAGE_WORK_DIR} > /dev/null
+            if [ "${CLEAN}" = "1" ]; then
+                rm -rf .pc
+                rm -rf *-pc
+            fi
+            QUILT_PATCHES=${SUB_STAGE_DIR}/${i}-patches
+            SUB_STAGE_QUILT_PATCH_DIR="$(basename $SUB_STAGE_DIR)-pc"
+            mkdir -p $SUB_STAGE_QUILT_PATCH_DIR
+            ln -snf $SUB_STAGE_QUILT_PATCH_DIR .pc
+            if [ -e ${SUB_STAGE_DIR}/${i}-patches/EDIT ]; then
+                echo "Dropping into bash to edit patches..."
+                bash
+            fi
+            quilt upgrade
+            RC=0
+            quilt push -a || RC=$?
+            case "$RC" in
+                0|2)
+                    ;;
+                *)
+                    false
+                    ;;
+            esac
+            popd > /dev/null
+            log "End ${SUB_STAGE_DIR}/${i}-patches"
+        fi
+        if [ -x ${i}-run.sh ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-run.sh"
+            ./${i}-run.sh
+            log "End ${SUB_STAGE_DIR}/${i}-run.sh"
+        fi
+        if [ -f ${i}-run-chroot.sh ]; then
+            log "Begin ${SUB_STAGE_DIR}/${i}-run-chroot.sh"
+            on_chroot < ${i}-run-chroot.sh
+            log "End ${SUB_STAGE_DIR}/${i}-run-chroot.sh"
+        fi
+    done
+    popd > /dev/null
+    log "End ${SUB_STAGE_DIR}"
+    echo "$fgRED   Completed Sub-Stage ${SUB_STAGE_DIR}"
+    echo "==============================================================================$fgNEU"
+    echo
 } #---[ end of run_sub_stage ]--------------------------------------------------
 
 
 #---[ run_stage - processes a full stage component of the build process ]-------
 #
 run_stage(){
-	echo "$atBRT$fgBLU=====( ( ( ( ( STARTING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
-	log "Begin ${STAGE_DIR}"
-	STAGE=$(basename ${STAGE_DIR})
-	pushd ${STAGE_DIR} > /dev/null
-	unmount ${WORK_DIR}/${STAGE}
-	STAGE_WORK_DIR=${WORK_DIR}/${STAGE}
-	ROOTFS_DIR=${STAGE_WORK_DIR}/rootfs
-	if [ -f ${STAGE_DIR}/EXPORT_IMAGE ]; then
-		EXPORT_DIRS="${EXPORT_DIRS} ${STAGE_DIR}"
-	fi
-	if [ ! -f SKIP ]; then
-		if [ "${CLEAN}" = "1" ]; then
-			if [ -d ${ROOTFS_DIR} ]; then
-				rm -rf ${ROOTFS_DIR}
-			fi
-		fi
-		if [ -x prerun.sh ]; then
-			log "Begin ${STAGE_DIR}/prerun.sh"
-			./prerun.sh
-			log "End ${STAGE_DIR}/prerun.sh"
-		fi
-		for SUB_STAGE_DIR in ${STAGE_DIR}/*; do
-			if [ -d ${SUB_STAGE_DIR} ] &&
-			   [ ! -f ${SUB_STAGE_DIR}/SKIP ]; then
-				run_sub_stage
-			fi
-		done
-	fi
-	unmount ${WORK_DIR}/${STAGE}
-	PREV_STAGE=${STAGE}
-	PREV_STAGE_DIR=${STAGE_DIR}
-	PREV_ROOTFS_DIR=${ROOTFS_DIR}
-	popd > /dev/null
-	log "End ${STAGE_DIR}"
-	echo "$atBRT$fgBLU=====( ( ( ( ( FINISHING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
-	gap
+    echo "$atBRT$fgBLU=====( ( ( ( ( STARTING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
+    log "Begin ${STAGE_DIR}"
+    STAGE=$(basename ${STAGE_DIR})
+    pushd ${STAGE_DIR} > /dev/null
+    unmount ${WORK_DIR}/${STAGE}
+    STAGE_WORK_DIR=${WORK_DIR}/${STAGE}
+    ROOTFS_DIR=${STAGE_WORK_DIR}/rootfs
+    if [ -f ${STAGE_DIR}/EXPORT_IMAGE ]; then
+        EXPORT_DIRS="${EXPORT_DIRS} ${STAGE_DIR}"
+    fi
+    if [ ! -f SKIP ]; then
+        if [ "${CLEAN}" = "1" ]; then
+            if [ -d ${ROOTFS_DIR} ]; then
+                rm -rf ${ROOTFS_DIR}
+            fi
+        fi
+        if [ -x prerun.sh ]; then
+            log "Begin ${STAGE_DIR}/prerun.sh"
+            ./prerun.sh
+            log "End ${STAGE_DIR}/prerun.sh"
+        fi
+        for SUB_STAGE_DIR in ${STAGE_DIR}/*; do
+            if [ -d ${SUB_STAGE_DIR} ] &&
+               [ ! -f ${SUB_STAGE_DIR}/SKIP ]; then
+                run_sub_stage
+            fi
+        done
+    fi
+    unmount ${WORK_DIR}/${STAGE}
+    PREV_STAGE=${STAGE}
+    PREV_STAGE_DIR=${STAGE_DIR}
+    PREV_ROOTFS_DIR=${ROOTFS_DIR}
+    popd > /dev/null
+    log "End ${STAGE_DIR}"
+    echo "$atBRT$fgBLU=====( ( ( ( ( FINISHING STAGE ${STAGE_DIR}     ) ) ) ) )=====$atRST$fgNEU"
+    gap
 } #---[ end of run_stage ]------------------------------------------------------
 
 
@@ -178,35 +181,44 @@ run_stage(){
 # Start of Mainline Script
 #=======================================
 #
-echo "$fgYEL$bgRED================================================================================="
-echo "===== MakeJessie Script Starting                                            ====="
-echo "=================================================================================$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=================================================================================$fgNEU$bgNEU"
+echo "$fgYEL$bgRED===== MakeJessie Script Starting                                            =====$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=================================================================================$fgNEU$bgNEU"
 
 if [ "$(id -u)" != "0" ]; then
-	echo "Please run as root" 1>&2
-	exit 1
+    echo "ERROR: Please run as root" 1>&2
+    exit 1
 fi
 
 if [ -f config ]; then
-	source config
+    source config
 fi
 
 if [ -z "${IMG_NAME}" ]; then
-	echo "IMG_NAME not set" 1>&2
-	exit 1
+    echo "ERROR: IMG_NAME not set" 1>&2
+    exit 1
 fi
+echo
+echo "$fgYEL$bgRED=====[ Image Name: ${IMG_NAME} ]=====$fgNEU$bgNEU"
 
-# See if we were passed the date to use as the IMG_DATE so that we can continue work on a 
-# Previous build...
-echo -e -n "\n\nChecking for date on command line..."
-if [ $# == 0 ]; then
-	echo -e "Using new date\n\n"
-	export IMG_DATE=${IMG_DATE:-"$(date +%Y-%m-%d)"}
-else
-	echo -e "Using old date $1\n\n"
-	export IMG_DATE=$1
+# See if we were passed the IMG_DATE Identifier in the config information.
+# If not, check on the command line for an identifier to use. Otherwise,
+# use the current date.  This allows us to continue work easily on a
+# previous build...
+#
+IMGDATE_COMMENT='(config)'
+if [ -z "${IMG_DATE}" ]; then
+    if [ $# == 0 ]; then
+        IMGDATE_COMMENT='(new)'
+        IMG_DATE="$(date +%Y-%m-%d)"
+    else
+        IMGDATE_COMMENT='(passed)'
+        IMG_DATE=$1
+    fi
 fi
-
+echo "$fgYEL$bgRED=====[ Image Date: ${IMG_DATE} ${IMGDATE_COMMENT} ]=====$fgNEU$bgNEU"
+export IMG_DATE
+echo
 
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export SCRIPT_DIR="${BASE_DIR}/scripts"
@@ -237,28 +249,24 @@ export QUILT_NO_DIFF_TIMESTAMPS=1
 export QUILT_REFRESH_ARGS="-p ab"
 
 
-# If the makejessie.sh script is not executable, then go and make sure that
-# the execute bit is set on all .sh files in this folder, in the 'stage#' folders, and
-# in the 'export_#' folders.
+# Make sure that the execute bit is set on all .sh files in this folder,
+# in the 'stage_' folders, and in the 'export_' folders.
 #
 echo "$fgBLU...Checking to make sure all our scripts are executable...$fgNEU"
-# if [ ! -x makejessie.sh ] ; then
 
-    echo "$fgBLU...Checking in $BASE_DIR...$fgNEU"
-    chmod +x -v *.sh
-	echo
+echo "$fgBLU...Checking in $BASE_DIR...$fgNEU"
+chmod +x -v *.sh
+echo
 
-    for DIR_NAME in stage0 stage1 stage2 stage3 stage4 export-image export-noobs scripts
-        do
-            echo "$fgBLU...Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
-            find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x -v {} \;
-			echo
-        done
-#    fi
+for DIR_NAME in stage0 stage1 stage2 stage3 stage4 stage5 export-image export-noobs scripts
+    do
+        echo "$fgBLU...Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
+        find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x -v {} \;
+        echo
+    done
 
 echo "$fgBLU...done...$fgNEU"
 gap
-
 
 exit 99
 
@@ -273,27 +281,27 @@ mkdir -p ${WORK_DIR}
 log "Begin ${BASE_DIR}"
 
 for STAGE_DIR in ${BASE_DIR}/stage*; do
-	run_stage
+    run_stage
 done
 
 CLEAN=1
 for EXPORT_DIR in ${EXPORT_DIRS}; do
-	STAGE_DIR=${BASE_DIR}/export-image
-	source "${EXPORT_DIR}/EXPORT_IMAGE"
-	EXPORT_ROOTFS_DIR=${WORK_DIR}/$(basename ${EXPORT_DIR})/rootfs
-	run_stage
-	if [ -e ${EXPORT_DIR}/EXPORT_NOOBS ]; then
-		source ${EXPORT_DIR}/EXPORT_NOOBS
-		STAGE_DIR=${BASE_DIR}/export-noobs
-		run_stage
-	fi
+    STAGE_DIR=${BASE_DIR}/export-image
+    source "${EXPORT_DIR}/EXPORT_IMAGE"
+    EXPORT_ROOTFS_DIR=${WORK_DIR}/$(basename ${EXPORT_DIR})/rootfs
+    run_stage
+    if [ -e ${EXPORT_DIR}/EXPORT_NOOBS ]; then
+        source ${EXPORT_DIR}/EXPORT_NOOBS
+        STAGE_DIR=${BASE_DIR}/export-noobs
+        run_stage
+    fi
 done
 
 if [ -x postrun.sh ]; then
-	log "Begin postrun.sh"
-	cd "${BASE_DIR}"
-	./postrun.sh
-	log "End postrun.sh"
+    log "Begin postrun.sh"
+    cd "${BASE_DIR}"
+    ./postrun.sh
+    log "End postrun.sh"
 fi
 
 log "End ${BASE_DIR}"
