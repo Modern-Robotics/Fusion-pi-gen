@@ -268,8 +268,6 @@ for DIR_NAME in stage0 stage1 stage2 stage3 stage4 stage5 export-image export-no
 echo "$fgBLU...done...$fgNEU"
 gap
 
-exit 99
-
 
 source ${SCRIPT_DIR}/common
 source ${SCRIPT_DIR}/dependencies_check
