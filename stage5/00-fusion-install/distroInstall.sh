@@ -16,7 +16,8 @@ MAIN_DIR=/usr/Fusion
 CMDLINE=/boot/cmdline.txt
 
 #===============================================================================
-# Set the commit number to build or build the most recent release
+# Set the Fusion commit number to build, or leave blank to build the most
+#   recent Fusion Release (ie: the HEAD)
 #
 # COMMIT=$(sudo git rev-list --tags --max-count=1)
 COMMIT= 
@@ -40,6 +41,7 @@ fi
 
 if [[ $? != 0 ]]; then exit 6; fi
 
+
 #===============================================================================
 # Set uart parameters
 #
@@ -54,6 +56,7 @@ elif ! grep -q "console=ttyAMA0" $CMDLINE && ! grep -q "console=serial0" $CMDLIN
         sed -i $CMDLINE -e "s/root=/console=ttyAMA0,115200 root=/"
     fi
 fi
+
 
 #===============================================================================
 # Set boot to enable i2c
@@ -71,6 +74,7 @@ else
     echo "I2C now enabled"
 fi
 
+
 #===============================================================================
 # Set boot to avoid warnings
 #
@@ -86,6 +90,7 @@ else
      echo "avoid_warnings=1" |  tee -a /boot/config.txt
     echo "Warnings now disabled"
 fi
+
 
 #===============================================================================
 # Update module file with kernel for i2c-dev
@@ -103,6 +108,7 @@ else
     echo "i2c-dev added and enabled"
 fi
 
+
 #===============================================================================
 # Update module file with kernel for i2c-bcm2708
 #
@@ -119,12 +125,12 @@ else
     echo "i2c-bcm2708 added and enabled"
 fi
 
+
 #===============================================================================
 # Update blacklist to turn off bluetooth
 #
 echo "blacklist btbcm" | tee -a /etc/modprobe.d/raspi-blacklist.conf
 echo "blacklist hci_uart" | tee -a /etc/modprobe.d/raspi-blacklist.conf
-
 
 
 #===============================================================================
