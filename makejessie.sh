@@ -4,6 +4,8 @@
 # Build procedure for Fusion-based Jessie Debian -------------------------------
 # ------------------------------------------------------------------------------
 # Modification History:
+#	24-Aug-2018 <jwa> - Changed name of common scripts file to common.sh so 
+#		the editor will use syntax highlighting (I got tired of doing it!)
 #   23-Aug-2018 <jwa> - Modified to look in the config file for the IMG_DATE
 #       identifier. If it is found, it is used. Otherwise, the current date is
 #       used.
@@ -269,7 +271,7 @@ echo "$fgBLU...done...$fgNEU"
 gap
 
 
-source ${SCRIPT_DIR}/common
+source ${SCRIPT_DIR}/common.sh
 source ${SCRIPT_DIR}/dependencies_check
 
 

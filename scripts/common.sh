@@ -5,12 +5,19 @@
 #
 #===============================================================================
 
+
+#===============================================================================
+# Function log() - sends string arg to console & logfile with timestamp
+#
 log (){
 	date +"[%T] $@" | tee -a "${LOG_FILE}"
-}
+} # // end of log() //
 export -f log
 
 
+#===============================================================================
+# Function bootstrap() - 
+#
 bootstrap(){
     echo "$atBRT$fgCYN   ==> running bootstrap process...$atRST$fgNEU"
 	local ARCH
@@ -28,10 +35,13 @@ bootstrap(){
 		--arch armhf \
 		--keyring "${STAGE_DIR}/files/raspberrypi.gpg" \
 		$1 $2 $3" || rmdir "$2/debootstrap"
-}
+} # // end of bootstrap() //
 export -f bootstrap
 
 
+#===============================================================================
+# Function copy_previous() - copies previous stage's workspace for next stage
+#
 copy_previous(){
     echo "$atBRT$fgCYN   ==> running copy_previous process...$atRST$fgNEU"
 	if [ ! -d "${PREV_ROOTFS_DIR}" ]; then
@@ -41,10 +51,13 @@ copy_previous(){
 	fi
 	mkdir -p "${ROOTFS_DIR}"
 	rsync -aHAXx --exclude var/cache/apt/archives "${PREV_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
-}
+} # // end of copy_previous() //
 export -f copy_previous
 
 
+#===============================================================================
+# Function unmount() - unmounts filesystem
+#
 unmount(){
 	if [ -z "$1" ]; then
 		DIR=$PWD
@@ -59,10 +72,13 @@ unmount(){
 			umount "$loc"
 		done
 	done
-}
+} # // end of unmount() //
 export -f unmount
 
 
+#===============================================================================
+# Function unmount_image() - unmounts image of filesystem
+#
 unmount_image(){
 	sync
 	sleep 1
@@ -79,10 +95,13 @@ unmount_image(){
 			losetup -d "${LOOP_DEV}"
 		fi
 	done
-}
+} # // end of unmount_image() //
 export -f unmount_image
 
 
+#===============================================================================
+# Function on_chroot() - mounts the target filesystem and executes argument 
+#
 on_chroot() {
 	if ! mount | grep -q "$(realpath "${ROOTFS_DIR}"/proc)"; then
 		mount -t proc proc "${ROOTFS_DIR}/proc"
@@ -101,14 +120,17 @@ on_chroot() {
 	fi
 
 	capsh --drop=cap_setfcap "--chroot=${ROOTFS_DIR}/" -- "$@"
-}
+} # // end of on_chroot() //
 export -f on_chroot
 
 
+#===============================================================================
+# Function update_issue() -  
+#
 update_issue() {
 	local GIT_HASH
 	GIT_HASH=$(git rev-parse HEAD)
 	echo -e "Raspberry Pi reference ${IMG_DATE}\nGenerated using pi-gen, https://github.com/RPi-Distro/pi-gen, ${GIT_HASH}, ${1}" > "${ROOTFS_DIR}/etc/rpi-issue"
-}
+} # // end of update_issue() //
 export -f update_issue
 
