@@ -4,6 +4,8 @@
 #   installs it.  It also configures and enables the various I/O devices on
 #   the Raspberry Pi.
 #-------------------------------------------------------------------------------
+# 27-Aug-2018 <jwa> - Moved imult and numpy to stage 4//03-python-pkgs 
+#		in the interest of speed.  Compiling numpy takes a long time!
 # 24-Aug-2018 <jwa> - Added Google DNS @8.8.8.8 to the /etc/resolv.conf file
 #		to maintain DNS Service while perfoming the distro install process.
 # 20-Aug-2018 <jwa> - Added progress messages and revision history
@@ -214,14 +216,14 @@ echo "$atBRT$fgGRN+++[ Installing Tools ]+++++$atRST$fgNEU"
 echo "$atBRT$fgGRN---< npm install forever >---$atRST$fgNEU"
 npm install forever -g 
 
-echo "$atBRT$fgGRN---< pip install imutils >---$atRST$fgNEU"
-pip install imutils 
-
-echo "$atBRT$fgGRN---< pip install numpy >---$atRST$fgNEU"
-pip install numpy 
-
-echo "$atBRT$fgGRN---< pip install --upgrade numpy >---$atRST$fgNEU"
-pip install --upgrade numpy
+# echo "$atBRT$fgGRN---< pip install imutils >---$atRST$fgNEU"
+# pip install imutils 
+# 
+# echo "$atBRT$fgGRN---< pip install numpy >---$atRST$fgNEU"
+# pip install numpy 
+#
+# echo "$atBRT$fgGRN---< pip install --upgrade numpy >---$atRST$fgNEU"
+# pip install --upgrade numpy
 
 #===============================================================================
 # Install Fusion Interface Board Driver and Required Libraries & Packages
