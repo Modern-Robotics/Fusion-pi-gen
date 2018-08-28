@@ -4,6 +4,9 @@
 # Build procedure for Fusion-based Jessie Debian -------------------------------
 # ------------------------------------------------------------------------------
 # Modification History:
+#	28-Aug-2018 <jwa> - More refinements and progress tracking, mostly dealing 
+#		with the export_image stage -- there seems to be a problem with the
+#		way the image is mounted causing the final stage to bail.
 #	24-Aug-2018 <jwa> - Changed name of common scripts file to common.sh so 
 #		the editor will use syntax highlighting (I got tired of doing it!)
 #   23-Aug-2018 <jwa> - Modified to look in the config file for the IMG_DATE
@@ -50,6 +53,7 @@ gap() {
    echo
    echo
 } #---[ end gap() ]------------------------ 
+export -f gap
 
 
 #---[ run_sub_stage - processes a sub-stage component of the build process ]----
@@ -179,6 +183,7 @@ run_stage(){
 } #---[ end of run_stage ]------------------------------------------------------
 
 
+
 #=======================================
 # Start of Mainline Script
 #=======================================
@@ -228,6 +233,13 @@ export WORK_DIR=${WORK_DIR:-"${BASE_DIR}/work/${IMG_DATE}-${IMG_NAME}"}
 export DEPLOY_DIR=${DEPLOY_DIR:-"${BASE_DIR}/deploy"}
 export LOG_FILE="${WORK_DIR}/build.log"
 
+echo "$fgYEL$bgRED=====[ Base_Dir:   ${BASE_DIR} ]=====$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=====[ Script_Dir: ${SCRIPT_DIR} ]=====$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=====[ Work_Dir:   ${WORK_DIR} ]=====$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=====[ Deploy_Dir: ${DEPLOY_DIR} ]=====$fgNEU$bgNEU"
+echo "$fgYEL$bgRED=====[ Log:File:   ${LOG_FILE} ]=====$fgNEU$bgNEU"
+
+
 export CLEAN
 export IMG_NAME
 export APT_PROXY
@@ -255,18 +267,15 @@ export QUILT_REFRESH_ARGS="-p ab"
 # in the 'stage_' folders, and in the 'export_' folders.
 #
 echo "$fgBLU...Checking to make sure all our scripts are executable...$fgNEU"
-
 echo "$fgBLU...Checking in $BASE_DIR...$fgNEU"
-chmod +x -v *.sh
+chmod +x *.sh
 echo
-
 for DIR_NAME in stage0 stage1 stage2 stage3 stage4 stage5 export-image export-noobs scripts
     do
         echo "$fgBLU...Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
-        find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x -v {} \;
+        find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x {} \;
         echo
     done
-
 echo "$fgBLU...done...$fgNEU"
 gap
 

@@ -27,13 +27,21 @@ atHID=$ESC[8m   ;   fgNEU=$ESC[39m   ;   bgNEU=$ESC[49m
 
 echo "$atBRT$fgREDInstalling various Python Modules and Libraries$atRST$fgNEU"
 
-echo "$atBRT$fgGRN---< pip install imutils >---$atRST$fgNEU"
-pip -vvv install imutils 
-
-echo "$atBRT$fgGRN---< pip install numpy >---$atRST$fgNEU"
-pip -vvv install numpy 
-
-echo "$atBRT$fgGRN---< pip install --upgrade numpy >---$atRST$fgNEU"
-pip -vvv install --upgrade numpy
-
+echo "$atBRT$fgGRN---< Start: pip install imutils >---$atRST$fgNEU"
+pip install imutils 
+echo "$atBRT$fgGRN---<   End: pip install imutils >---$atRST$fgNEU"
 echo
+
+echo "$atBRT$fgGRN---< Start: pip install numpy >---$atRST$fgNEU"
+pip install numpy 
+echo "$atBRT$fgGRN---<   End: pip install numpy >---$atRST$fgNEU"
+echo
+
+echo "$atBRT$fgGRN---< Start: pip install --upgrade numpy >---$atRST$fgNEU"
+pip install --upgrade numpy
+echo "$atBRT$fgGRN---<   End: pip install --upgrade numpy >---$atRST$fgNEU"
+echo
+
+echo "$atBRT$fgREDFinished Installing various Python Modules and Libraries$atRST$fgNEU"
+echo
+
