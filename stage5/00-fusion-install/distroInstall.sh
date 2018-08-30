@@ -1,9 +1,15 @@
-#!/bin/bash -e -v
+#!/bin/bash -e 
 #===============================================================================
 # distroinstall.sh - Script that fetches compiled FusionServer from repo and
 #   installs it.  It also configures and enables the various I/O devices on
 #   the Raspberry Pi.
+#
+#  ******* NOTE: This script runs from within on_chroot($ROOTFS_DIR) *******
+#
 #-------------------------------------------------------------------------------
+# 30-Aug-2018 <jwa> - Preserved and restored the stage's /etc/resolv.conf file
+#		during the installation of the dnsmasq service which overwrites the
+#		DNS target.
 # 27-Aug-2018 <jwa> - Moved imult and numpy to stage 4//03-python-pkgs 
 #		in the interest of speed.  Compiling numpy takes a long time!
 # 24-Aug-2018 <jwa> - Added Google DNS @8.8.8.8 to the /etc/resolv.conf file
@@ -252,7 +258,6 @@ dpkg -i $MAIN_DIR/lib/*.deb
 #
 echo
 echo "$atBRT$fgGRN===[ Copying FusionOS System Config Files ]=====$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Copying FusionOS System Config Files ]=====$atRST$fgNEU"
 echo "$atBRT$fgBLU---< Copying /etc/network/interfaces >---$atRST$fgNEU"
 cp /usr/Fusion/etc/interfaces /etc/network/interfaces 
 chmod 644 /etc/network/interfaces 
@@ -294,21 +299,38 @@ chmod 700 /root/.vnc/config.d/vncserver-x11
 #
 echo
 echo "$atBRT$fgGRN===[ Enabling Services ]=====$atRST$fgNEU"
+echo
 echo "$atBRT$fgBLU---< Processing ssh >---$atRST$fgNEU"
 update-rc.d ssh enable 
 service ssh stop
 
+echo
 echo "$atBRT$fgBLU---< Processing mongodb >---$atRST$fgNEU"
 update-rc.d mongodb enable 
 service mongodb stop
 
+echo
 echo "$atBRT$fgBLU---< Processing hostapd >---$atRST$fgNEU"
 update-rc.d hostapd enable 
 service hostapd stop 
 
+echo
 echo "$atBRT$fgBLU---< Processing dnsmasq >---$atRST$fgNEU"
+
+#
+# The next step over-writes the stage's etc/resolv.conf file which makes it 
+#   lose DNS capabilities.  Rather than have that happen, we'll save the current
+#   file and then restore it after the step.  It's a sorta brute-force solution, 
+#   but it should do for now...
+cp /etc/resolv.conf /etc/resolv.save
 update-rc.d dnsmasq enable 
 service dnsmasq stop 
+rm /etc/resolv.conf
+mv /etc/resolv.save /etc/resolv.conf
+	echo
+	echo "Checking DNS"
+	cat /etc/resolv.conf
+	echo
 
 echo "$atBRT$fgBLU---< Processing vncserver-x11 daemon >---$atRST$fgNEU"
 systemctl enable vncserver-x11-serviced.service
@@ -330,4 +352,5 @@ ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
 
 echo
 echo "$atBRT$fgCYN***** DistroInstaller Finished *****$atRST$fgNEU"
+echo
 

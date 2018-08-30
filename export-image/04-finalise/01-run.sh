@@ -86,13 +86,9 @@ echo "$atBRT$fgGRN===< Preparing to compress the image >===$atRST$fgNEU"
 
 echo "$atBRT$fgGRN===[ WorkSpace Information ]===$atRST$fgNEU"
 echo "$atBRT$fgGRN===[ Image File:    ${IMG_FILE} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ RootFS:        ${ROOTFS_DIR} ]===$atRST$fgNEU"
+echo "$atBRT$fgGRN===[ RootFS Dir:    ${ROOTFS_DIR} ]===$atRST$fgNEU"
 echo "$atBRT$fgGRN===[ Export_RootFS: ${EXPORT_ROOTFS_DIR} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Root Dev:      ${ROOT_DEV} ]===$atRST$fgNEU"
-echo
-echo "$atBRT$fgGRN===[ Boot Size:     ${BOOT_SIZE} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Total Size:    ${TOTAL_SIZE} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Image Size:    ${IMG_SIZE} ]===$atRST$fgNEU"
+echo "$atBRT$fgGRN===[ Export Dir:    ${EXPORT_DIR} ]===$atRST$fgNEU"
 echo
 echo
 
@@ -109,12 +105,13 @@ ROOT_DEV=$(mount | grep "${ROOTFS_DIR} " | cut -f1 -d' ')
 echo "Current Root_dev = ${ROOT_DEV}"
 
 
-exit 99
-
-
-
 unmount ${ROOTFS_DIR}
+
+echo "$atBRT$fgGRN===[ Zeroing free space for better compression ]===$atRST$fgNEU"
+echo "$atRST$fgGRN===[ Blocks Modified, Blocks Free, Total Blocks ]===$atRST$fgNEU"
 zerofree -v ${ROOT_DEV}
+echo
+
 
 unmount_image ${IMG_FILE}
 
@@ -122,12 +119,12 @@ mkdir -p ${DEPLOY_DIR}
 
 rm -f ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip
 
-echo zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip ${IMG_FILE}
-
+echo "$atBRT$fgGRN===[ Preparing to generate .zip file ]===$atRST$fgNEU"
+echo "$atBRT$fgGRN---[ zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip ${IMG_FILE} ]---$atRST$fgNEU"
 pushd ${STAGE_WORK_DIR} > /dev/null
 
 ##### <jwa> #####
-##### Let's skip makeing the zip file right now -- it takes so long!
+##### Let's skip making the zip file right now -- it takes so long!
 ##### zip ${DEPLOY_DIR}/image_${IMG_DATE}-${IMG_NAME}${IMG_SUFFIX}.zip $(basename ${IMG_FILE})
 
 popd > /dev/null

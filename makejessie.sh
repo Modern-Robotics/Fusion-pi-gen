@@ -197,10 +197,14 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+# Check for the configuration file and include it if present...
+#
 if [ -f config ]; then
     source config
 fi
 
+# Confirm that the configuration includes an Image Name
+#
 if [ -z "${IMG_NAME}" ]; then
     echo "ERROR: IMG_NAME not set" 1>&2
     exit 1
@@ -224,9 +228,10 @@ if [ -z "${IMG_DATE}" ]; then
     fi
 fi
 echo "$fgYEL$bgRED=====[ Image Date: ${IMG_DATE} ${IMGDATE_COMMENT} ]=====$fgNEU$bgNEU"
-export IMG_DATE
 echo
 
+# Set and output the major directories to the console
+#
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export SCRIPT_DIR="${BASE_DIR}/scripts"
 export WORK_DIR=${WORK_DIR:-"${BASE_DIR}/work/${IMG_DATE}-${IMG_NAME}"}
@@ -238,10 +243,12 @@ echo "$fgYEL$bgRED=====[ Script_Dir: ${SCRIPT_DIR} ]=====$fgNEU$bgNEU"
 echo "$fgYEL$bgRED=====[ Work_Dir:   ${WORK_DIR} ]=====$fgNEU$bgNEU"
 echo "$fgYEL$bgRED=====[ Deploy_Dir: ${DEPLOY_DIR} ]=====$fgNEU$bgNEU"
 echo "$fgYEL$bgRED=====[ Log:File:   ${LOG_FILE} ]=====$fgNEU$bgNEU"
+echo
 
 
 export CLEAN
 export IMG_NAME
+export IMG_DATE
 export APT_PROXY
 
 export STAGE
@@ -267,38 +274,49 @@ export QUILT_REFRESH_ARGS="-p ab"
 # in the 'stage_' folders, and in the 'export_' folders.
 #
 echo "$fgBLU...Checking to make sure all our scripts are executable...$fgNEU"
-echo "$fgBLU...Checking in $BASE_DIR...$fgNEU"
+echo "$fgBLU   Checking in $BASE_DIR...$fgNEU"
 chmod +x *.sh
-echo
 for DIR_NAME in stage0 stage1 stage2 stage3 stage4 stage5 export-image export-noobs scripts
     do
-        echo "$fgBLU...Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
+        echo "$fgBLU   Checking in $BASE_DIR/${DIR_NAME}...$fgNEU"
         find "${BASE_DIR}/${DIR_NAME}" -iname "*\.sh" -exec chmod +x {} \;
-        echo
     done
-echo "$fgBLU...done...$fgNEU"
+echo "$fgBLU...done$fgNEU"
+echo
 gap
 
-
+# Include the common scripts and the dependency check scripts
+#
 source ${SCRIPT_DIR}/common.sh
-source ${SCRIPT_DIR}/dependencies_check
+source ${SCRIPT_DIR}/dependencies_check.sh
 
 
+echo "$fgBLU...Checking to make sure all dependencies are pre-installed...$fgNEU"
 dependencies_check ${BASE_DIR}/depends
+echo
 
 mkdir -p ${WORK_DIR}
-log "Begin ${BASE_DIR}"
+log "Beginning Main Stage Loop with BaseDir=${BASE_DIR}"
 
+# This simple little loop runs the numbered stages (although the heavy lifting
+#   is done by the two functions defines above)
+#
 for STAGE_DIR in ${BASE_DIR}/stage*; do
     run_stage
 done
 
+# Now we examine the EXPORT_DIRS string to see which stages 
+#   requested image (and noobs) export
+#
+echo
+echo "$fgBLU...Preparing to export images for $EXPORT_DIRS $fgNEU"
 CLEAN=1
 for EXPORT_DIR in ${EXPORT_DIRS}; do
     STAGE_DIR=${BASE_DIR}/export-image
     source "${EXPORT_DIR}/EXPORT_IMAGE"
     EXPORT_ROOTFS_DIR=${WORK_DIR}/$(basename ${EXPORT_DIR})/rootfs
     run_stage
+	
     if [ -e ${EXPORT_DIR}/EXPORT_NOOBS ]; then
         source ${EXPORT_DIR}/EXPORT_NOOBS
         STAGE_DIR=${BASE_DIR}/export-noobs

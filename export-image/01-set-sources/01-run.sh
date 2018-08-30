@@ -26,14 +26,21 @@ atREV=$ESC[7m   ;   fgWHT=$ESC[37m   ;   bgWHT=$ESC[47m
 atHID=$ESC[8m   ;   fgNEU=$ESC[39m   ;   bgNEU=$ESC[49m
 
 
-#---[ Beginning of allow-rerun processing ]-----------------------------------------------
+#---[ Beginning of set-sources processing ]-----------------------------------------------
 echo "$atBRT$fgCYN***** Set-Sources Processing *****$atRST$fgNEU"
 
 
 # Essentially, this makes sure that the OS installed in our target Root FileSystem
 #   is up to date (for it's release version)
 #
+# There is a problem here since there is no nameserver listed in the /etc/resolve.conf
+#   file in the target filesystem.  As a result, apt-get cannot resolve the URLs for
+#   the archive and/or mirror servers.
+#
+# We may need to poke a nameserver in so we can perform the look-ups
+#
 on_chroot << EOF
+cat /etc/resolv.conf
 apt-get update
 apt-get -y dist-upgrade
 apt-get clean

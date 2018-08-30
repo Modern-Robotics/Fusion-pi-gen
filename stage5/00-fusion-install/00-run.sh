@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/bin/bash -e
 ################################################################################
 # FusionServer Integrator/Installer - This script drives the integration and
 # configuration of the JessieOS with the FusionOS.

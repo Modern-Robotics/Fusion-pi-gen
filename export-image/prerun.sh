@@ -65,10 +65,12 @@ echo "$atBRT$fgGRN===[ Image Size:    ${IMG_SIZE} ]===$atRST$fgNEU"
 echo
 echo
 
-echo "$atBRT$fgBLU===[ Truncating and Running fdisk ]===$atRST$fgNEU"
+echo "$atBRT$fgBLU===[ Creating ${IMG_SIZE} Byte Image file ${IMG_FILE} and Running fdisk to partition ]===$atRST$fgNEU"
+# Um..., forget that it says 'truncate', we're using it to set the file size...
 truncate -s ${IMG_SIZE} ${IMG_FILE}
 
 fdisk -H 255 -S 63 ${IMG_FILE} <<EOF
+p
 o
 n
 
@@ -105,12 +107,10 @@ echo "$atBRT$fgGRN===[ Output from Parted ]===$atRST$fgNEU"
 echo "$fgGRN${PARTED_OUT}$atRST$fgNEU"
 echo 
 echo "$atBRT$fgGRN===[ Image Parameters ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ /boot: offset  ${BOOT_OFFSET},  length   ${BOOT_LENGTH} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ /    : offset ${ROOT_OFFSET},  length ${ROOT_LENGTH} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Root_Device = ${ROOT_DEV} ]===$atRST$fgNEU"
-echo "$atBRT$fgGRN===[ Boot_Device = ${BOOT_DEV} ]===$atRST$fgNEU"
+echo "$atBRT$fgGRN===[ Boot_Device = ${BOOT_DEV}  -  /boot: offset  ${BOOT_OFFSET},  length   ${BOOT_LENGTH} ]===$atRST$fgNEU"
+echo "$atBRT$fgGRN===[ Root_Device = ${ROOT_DEV}  -  /    : offset ${ROOT_OFFSET},  length ${ROOT_LENGTH} ]===$atRST$fgNEU"
 echo 
-echo "$$atRSTfgGRN$ ---------- Loop Device Table ----------$atRST$fgNEU"
+echo "$atRST$fgGRN ---------- Loop Device Table ----------$atRST$fgNEU"
 losetup -a 
 echo
 echo
@@ -138,6 +138,20 @@ echo "$atBRT$fgBLU===[ Copying Root Filesystem to Export ]===$atRST$fgNEU"
 echo "$atRST$fgBLU===[      Source: ${EXPORT_ROOTFS_DIR} ]===$atRST$fgNEU"
 echo "$atRST$fgBLU===[ Destination: ${ROOTFS_DIR} ]===$atRST$fgNEU"
 rsync -aHAXx --exclude var/cache/apt/archives ${EXPORT_ROOTFS_DIR}/ ${ROOTFS_DIR}/
+
+echo "Name Resolution..."
+cat /builds/MakeJessie/work/RC_1.1-JWA_Jessie/export-image/rootfs/etc/resolv.conf
+
+	echo
+	echo "${fgGRN}Checking DNS for Source ${EXPORT_ROOTFS_DIR}"
+	cat  ${EXPORT_ROOTFS_DIR}/etc/resolv.conf
+	echo "${fgNEU}"
+	echo 
+	echo "${fgBLU}Checking DNS for Destination ${ROOTFS_DIR}"
+	cat  ${ROOTFS_DIR}/etc/resolv.conf
+	echo "${fgNEU}"
+	echo 
+
 
 echo "$atBRT$fgCYN***** EXPORT_IMAGE PRERUN COMPLETE *****$atRST$fgNEU"
 
